@@ -39,7 +39,31 @@ const applyForJob = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+// [APPLY-BE-03] Get My Applications
+const getMyApplications = async (req, res) => {
+  try {
+    // NOTE: For now, we are grabbing applicantId from req.query for testing.
+    // Later, Dev 3 will provide auth middleware so we can use req.user.id instead.
+    const { applicantId } = req.query; 
+
+    if (!applicantId) {
+      return res.status(400).json({ message: 'Applicant ID is required' });
+    }
+
+    const applications = await applicationService.getApplicationsByApplicant(applicantId);
+    
+    res.status(200).json({ 
+      count: applications.length,
+      applications 
+    });
+
+  } catch (error) {
+    console.error('Get Applications Error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
 
 module.exports = {
-  applyForJob
+  applyForJob,
+  getMyApplications
 };
