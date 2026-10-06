@@ -71,6 +71,7 @@ const jobs = [
 function App() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedJobId, setSelectedJobId] = useState(jobs[0].id)
+  const [appliedJobId, setAppliedJobId] = useState('')
 
   const filteredJobs = useMemo(() => {
     const keyword = searchTerm.trim().toLowerCase()
@@ -88,6 +89,11 @@ function App() {
 
   const selectedJob =
     filteredJobs.find((job) => job.id === selectedJobId) ?? filteredJobs[0]
+
+  const handleApply = (job) => {
+    setSelectedJobId(job.id)
+    setAppliedJobId(job.id)
+  }
 
   return (
     <main className="app-shell">
@@ -136,6 +142,7 @@ function App() {
                 <th scope="col">Deadline</th>
                 <th scope="col">Status</th>
                 <th scope="col">Details</th>
+                <th scope="col">Apply</th>
               </tr>
             </thead>
             <tbody>
@@ -166,6 +173,16 @@ function App() {
                       View
                     </button>
                   </td>
+                  <td data-label="Apply">
+                    <button
+                      type="button"
+                      className="apply-button"
+                      onClick={() => handleApply(job)}
+                      disabled={appliedJobId === job.id}
+                    >
+                      {appliedJobId === job.id ? 'Applied' : 'Apply'}
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -191,6 +208,12 @@ function App() {
             </div>
             <span className="status-pill">{selectedJob.status}</span>
           </div>
+
+          {appliedJobId === selectedJob.id && (
+            <div className="application-alert" role="status">
+              You selected this job for application.
+            </div>
+          )}
 
           <dl className="details-grid">
             <div>
@@ -227,6 +250,19 @@ function App() {
           <div className="details-copy">
             <h3>Requirements</h3>
             <p>{selectedJob.requirements}</p>
+          </div>
+
+          <div className="details-actions">
+            <button
+              type="button"
+              className="apply-button apply-button-large"
+              onClick={() => handleApply(selectedJob)}
+              disabled={appliedJobId === selectedJob.id}
+            >
+              {appliedJobId === selectedJob.id
+                ? 'Application Selected'
+                : 'Apply for this Job'}
+            </button>
           </div>
         </section>
       )}
