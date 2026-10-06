@@ -2,6 +2,14 @@ const Application = require('../models/Application');
 
 // [APPLY-BE-02] Create new application logic
 const createApplication = async (applicantId, jobId, resumeLink, coverLetter) => {
+  // [APPLY-BE-05] Pre-check for duplicate (faster than waiting for the index error)
+  const existingApplication = await Application.findOne({ applicantId, jobId });
+  if (existingApplication) {
+    const error = new Error('Duplicate Application');
+    error.code = 11000; // Simulate MongoDB's duplicate error for the controller
+    throw error;
+  }
+
   const newApplication = new Application({
     applicantId,
     jobId,
@@ -9,16 +17,14 @@ const createApplication = async (applicantId, jobId, resumeLink, coverLetter) =>
     coverLetter
   });
   
-  // Save to MongoDB
   return await newApplication.save();
 };
 
 // [APPLY-BE-03] Get all applications for a specific applicant
 const getApplicationsByApplicant = async (applicantId) => {
-  // .populate() replaces the jobId with the actual Job document data
   return await Application.find({ applicantId })
     .populate('jobId', 'title company location salary') 
-    .sort({ createdAt: -1 }); // Newest applications first
+    .sort({ createdAt: -1 });
 };
 
 // [APPLY-BE-04] Update the status of an application
@@ -26,7 +32,7 @@ const updateApplicationStatus = async (applicationId, status) => {
   return await Application.findByIdAndUpdate(
     applicationId,
     { status },
-    { new: true, runValidators: true } // Return updated doc & run schema validation
+    { new: true, runValidators: true }
   ).populate('jobId', 'title company');
 };
 
