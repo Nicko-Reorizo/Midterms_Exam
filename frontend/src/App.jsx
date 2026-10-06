@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import './App.css'
 
-const jobs = [
+const fallbackJobs = [
   {
     id: 'JOB-001',
     title: 'Frontend Developer',
@@ -68,10 +68,85 @@ const jobs = [
   },
 ]
 
+const formatDate = (value) => {
+  if (!value) {
+    return 'Not set'
+  }
+
+  return new Intl.DateTimeFormat('en', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(new Date(value))
+}
+
+const formatSalary = (value) => {
+  if (!value) {
+    return 'Not specified'
+  }
+
+  if (typeof value === 'number') {
+    return `PHP ${value.toLocaleString()}`
+  }
+
+  return value
+}
+
+const normalizeJob = (job, index) => ({
+  id: job._id ?? job.id ?? `JOB-${String(index + 1).padStart(3, '0')}`,
+  title: job.title ?? 'Untitled Job',
+  company: job.company ?? 'Unknown Company',
+  location: job.location ?? 'Not specified',
+  type: job.jobType ?? job.type ?? 'Full-time',
+  salary: formatSalary(job.salary),
+  deadline: formatDate(job.deadline),
+  status: job.status ?? 'Open',
+  department: job.department ?? 'General',
+  postedDate: formatDate(job.createdAt ?? job.postedDate),
+  description: job.description ?? 'No description provided.',
+  requirements: job.requirements ?? 'No requirements provided.',
+})
+
 function App() {
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedJobId, setSelectedJobId] = useState(jobs[0].id)
+  const [jobs, setJobs] = useState(fallbackJobs)
+  const [selectedJobId, setSelectedJobId] = useState(fallbackJobs[0].id)
   const [appliedJobId, setAppliedJobId] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
+  const [apiError, setApiError] = useState('')
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const response = await fetch('/api/jobs')
+
+        if (!response.ok) {
+          throw new Error('Unable to load jobs from the API.')
+        }
+
+        const result = await response.json()
+        const apiJobs = Array.isArray(result) ? result : result.data
+
+        if (!Array.isArray(apiJobs)) {
+          throw new Error('The jobs API returned an invalid response.')
+        }
+
+        const normalizedJobs = apiJobs.map(normalizeJob)
+
+        setJobs(normalizedJobs)
+        setSelectedJobId(normalizedJobs[0]?.id ?? '')
+        setApiError('')
+      } catch (error) {
+        setJobs(fallbackJobs)
+        setSelectedJobId(fallbackJobs[0].id)
+        setApiError(`${error.message} Showing sample jobs instead.`)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchJobs()
+  }, [])
 
   const filteredJobs = useMemo(() => {
     const keyword = searchTerm.trim().toLowerCase()
@@ -85,7 +160,7 @@ function App() {
         String(value).toLowerCase().includes(keyword),
       ),
     )
-  }, [searchTerm])
+  }, [jobs, searchTerm])
 
   const selectedJob =
     filteredJobs.find((job) => job.id === selectedJobId) ?? filteredJobs[0]
@@ -103,9 +178,17 @@ function App() {
           <h1>Available Jobs</h1>
         </div>
         <p className="job-count">
-          {filteredJobs.length} of {jobs.length} jobs shown
+          {isLoading
+            ? 'Loading jobs...'
+            : `${filteredJobs.length} of ${jobs.length} jobs shown`}
         </p>
       </header>
+
+      {apiError && (
+        <div className="api-alert" role="status">
+          {apiError}
+        </div>
+      )}
 
       <section className="table-section" aria-labelledby="jobs-table-title">
         <div className="section-heading">

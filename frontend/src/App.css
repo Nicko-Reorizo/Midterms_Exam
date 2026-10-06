@@ -47,6 +47,16 @@
   overflow: hidden;
 }
 
+.api-alert {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  color: #9a3412;
+  font-weight: 700;
+  margin-bottom: 18px;
+  padding: 14px 18px;
+}
+
 .section-heading {
   align-items: flex-end;
   border-bottom: 1px solid #dde4f0;
