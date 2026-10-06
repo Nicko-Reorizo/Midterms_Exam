@@ -18,6 +18,30 @@ const getJobs = async (req, res) => {
     }
 };
 
+const getJobById = async (req, res) => {
+    try {
+        const job = await jobService.getJobById(req.params.id);
+
+        if (!job) {
+            return res.status(404).json({
+                success: false,
+                message: 'Job not found',
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: job,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to fetch job details',
+            error: error.message,
+        });
+    }
+};
+
 const searchJobs = async (req, res) => {
     try {
         const searchTerm = req.query.q || req.query.keyword || req.query.search || '';
@@ -37,4 +61,4 @@ const searchJobs = async (req, res) => {
     }
 };
 
-module.exports = { getJobs, searchJobs };
+module.exports = { getJobs, getJobById, searchJobs };

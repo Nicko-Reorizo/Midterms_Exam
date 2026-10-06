@@ -1,4 +1,5 @@
 const Job = require('../models/Job');
+const mongoose = require('mongoose');
 
 const escapeRegex = (value) => {
     return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -6,6 +7,14 @@ const escapeRegex = (value) => {
 
 const getJobs = async () => {
     return await Job.find().sort({ createdAt: -1 });
+};
+
+const getJobById = async (jobId) => {
+    if (!mongoose.Types.ObjectId.isValid(jobId)) {
+        return null;
+    }
+
+    return await Job.findById(jobId);
 };
 
 const searchJobs = async (searchTerm) => {
@@ -30,4 +39,4 @@ const searchJobs = async (searchTerm) => {
     }).sort({ createdAt: -1 });
 };
 
-module.exports = { getJobs, searchJobs };
+module.exports = { getJobs, getJobById, searchJobs };
