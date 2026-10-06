@@ -21,7 +21,17 @@ const getApplicationsByApplicant = async (applicantId) => {
     .sort({ createdAt: -1 }); // Newest applications first
 };
 
+// [APPLY-BE-04] Update the status of an application
+const updateApplicationStatus = async (applicationId, status) => {
+  return await Application.findByIdAndUpdate(
+    applicationId,
+    { status },
+    { new: true, runValidators: true } // Return updated doc & run schema validation
+  ).populate('jobId', 'title company');
+};
+
 module.exports = {
   createApplication,
-  getApplicationsByApplicant
+  getApplicationsByApplicant,
+  updateApplicationStatus
 };

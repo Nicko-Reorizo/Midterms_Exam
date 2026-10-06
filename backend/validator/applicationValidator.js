@@ -1,4 +1,5 @@
-const { body } = require('express-validator');
+const { body, param } = require('express-validator');
+
 
 const validateApplication = [
   body('jobId')
@@ -12,4 +13,14 @@ const validateApplication = [
     .isString().withMessage('Cover letter must be text')
 ];
 
-module.exports = { validateApplication };
+// [APPLY-BE-04] Validator for updating status
+const validateStatusUpdate = [
+  param('applicationId')
+    .isMongoId().withMessage('Invalid Application ID format'),
+  body('status')
+    .notEmpty().withMessage('Status is required')
+    .isIn(['Pending', 'Reviewed', 'Accepted', 'Rejected'])
+    .withMessage('Status must be Pending, Reviewed, Accepted, or Rejected')
+];
+
+module.exports = { validateApplication, validateStatusUpdate };
