@@ -1,3 +1,4 @@
+// Task 5
 const jwt = require('jsonwebtoken');
 
 const verifyAuth = (req, res, next) => {
