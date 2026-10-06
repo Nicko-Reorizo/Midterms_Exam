@@ -11,6 +11,12 @@ const jobs = [
     salary: 'PHP 35,000 - 45,000',
     deadline: 'Oct 18, 2026',
     status: 'Open',
+    department: 'Engineering',
+    postedDate: 'Oct 1, 2026',
+    description:
+      'Build responsive application pages and reusable React components for the job application system.',
+    requirements:
+      'React basics, CSS layout skills, Git workflow knowledge, and attention to accessible UI.',
   },
   {
     id: 'JOB-002',
@@ -21,6 +27,12 @@ const jobs = [
     salary: 'PHP 40,000 - 55,000',
     deadline: 'Oct 21, 2026',
     status: 'Open',
+    department: 'Engineering',
+    postedDate: 'Oct 2, 2026',
+    description:
+      'Develop API endpoints, connect database models, and support secure applicant and job workflows.',
+    requirements:
+      'Node.js, Express, MongoDB or Mongoose, API validation, and basic authentication knowledge.',
   },
   {
     id: 'JOB-003',
@@ -31,6 +43,12 @@ const jobs = [
     salary: 'PHP 28,000 - 38,000',
     deadline: 'Oct 25, 2026',
     status: 'Open',
+    department: 'Design',
+    postedDate: 'Oct 3, 2026',
+    description:
+      'Design clean user flows, improve form usability, and prepare interface mockups for applicants.',
+    requirements:
+      'UI design fundamentals, wireframing, user research basics, and collaboration with frontend developers.',
   },
   {
     id: 'JOB-004',
@@ -41,11 +59,18 @@ const jobs = [
     salary: 'PHP 18,000 - 24,000',
     deadline: 'Oct 30, 2026',
     status: 'Open',
+    department: 'Quality Assurance',
+    postedDate: 'Oct 4, 2026',
+    description:
+      'Test applicant, job, and application features to catch bugs before release.',
+    requirements:
+      'Manual testing, bug reporting, test case writing, and careful review of user workflows.',
   },
 ]
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('')
+  const [selectedJobId, setSelectedJobId] = useState(jobs[0].id)
 
   const filteredJobs = useMemo(() => {
     const keyword = searchTerm.trim().toLowerCase()
@@ -56,10 +81,13 @@ function App() {
 
     return jobs.filter((job) =>
       Object.values(job).some((value) =>
-        value.toLowerCase().includes(keyword),
+        String(value).toLowerCase().includes(keyword),
       ),
     )
   }, [searchTerm])
+
+  const selectedJob =
+    filteredJobs.find((job) => job.id === selectedJobId) ?? filteredJobs[0]
 
   return (
     <main className="app-shell">
@@ -107,11 +135,15 @@ function App() {
                 <th scope="col">Salary Range</th>
                 <th scope="col">Deadline</th>
                 <th scope="col">Status</th>
+                <th scope="col">Details</th>
               </tr>
             </thead>
             <tbody>
               {filteredJobs.map((job) => (
-                <tr key={job.id}>
+                <tr
+                  key={job.id}
+                  className={job.id === selectedJob?.id ? 'selected-row' : ''}
+                >
                   <td data-label="Job ID">{job.id}</td>
                   <td data-label="Position">
                     <strong>{job.title}</strong>
@@ -123,6 +155,16 @@ function App() {
                   <td data-label="Deadline">{job.deadline}</td>
                   <td data-label="Status">
                     <span className="status-pill">{job.status}</span>
+                  </td>
+                  <td data-label="Details">
+                    <button
+                      type="button"
+                      className="details-button"
+                      onClick={() => setSelectedJobId(job.id)}
+                      aria-pressed={job.id === selectedJob?.id}
+                    >
+                      View
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -136,6 +178,58 @@ function App() {
           </div>
         )}
       </section>
+
+      {selectedJob && (
+        <section className="details-panel" aria-labelledby="job-details-title">
+          <div className="details-header">
+            <div>
+              <p className="eyebrow">Selected Job</p>
+              <h2 id="job-details-title">{selectedJob.title}</h2>
+              <p>
+                {selectedJob.company} - {selectedJob.location}
+              </p>
+            </div>
+            <span className="status-pill">{selectedJob.status}</span>
+          </div>
+
+          <dl className="details-grid">
+            <div>
+              <dt>Job ID</dt>
+              <dd>{selectedJob.id}</dd>
+            </div>
+            <div>
+              <dt>Department</dt>
+              <dd>{selectedJob.department}</dd>
+            </div>
+            <div>
+              <dt>Employment Type</dt>
+              <dd>{selectedJob.type}</dd>
+            </div>
+            <div>
+              <dt>Salary Range</dt>
+              <dd>{selectedJob.salary}</dd>
+            </div>
+            <div>
+              <dt>Posted Date</dt>
+              <dd>{selectedJob.postedDate}</dd>
+            </div>
+            <div>
+              <dt>Application Deadline</dt>
+              <dd>{selectedJob.deadline}</dd>
+            </div>
+          </dl>
+
+          <div className="details-copy">
+            <h3>Job Description</h3>
+            <p>{selectedJob.description}</p>
+          </div>
+
+          <div className="details-copy">
+            <h3>Requirements</h3>
+            <p>{selectedJob.requirements}</p>
+          </div>
+        </section>
+      )}
     </main>
   )
 }
