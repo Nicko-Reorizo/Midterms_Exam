@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react'
 import './App.css'
 
 const jobs = [
@@ -44,6 +45,22 @@ const jobs = [
 ]
 
 function App() {
+  const [searchTerm, setSearchTerm] = useState('')
+
+  const filteredJobs = useMemo(() => {
+    const keyword = searchTerm.trim().toLowerCase()
+
+    if (!keyword) {
+      return jobs
+    }
+
+    return jobs.filter((job) =>
+      Object.values(job).some((value) =>
+        value.toLowerCase().includes(keyword),
+      ),
+    )
+  }, [searchTerm])
+
   return (
     <main className="app-shell">
       <header className="page-header">
@@ -51,14 +68,32 @@ function App() {
           <p className="eyebrow">Job Application System</p>
           <h1>Available Jobs</h1>
         </div>
-        <p className="job-count">{jobs.length} jobs listed</p>
+        <p className="job-count">
+          {filteredJobs.length} of {jobs.length} jobs shown
+        </p>
       </header>
 
       <section className="table-section" aria-labelledby="jobs-table-title">
         <div className="section-heading">
-          <h2 id="jobs-table-title">Job Listing Table</h2>
-          <p>Browse current openings and review basic job information.</p>
+          <div>
+            <h2 id="jobs-table-title">Job Listing Table</h2>
+            <p>Browse current openings and review basic job information.</p>
+          </div>
+
+          <label className="search-field">
+            <span>Search jobs</span>
+            <input
+              type="search"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder="Search title, company, location..."
+              aria-describedby="search-help"
+            />
+          </label>
         </div>
+        <p id="search-help" className="sr-only">
+          Search filters the job listing table by any visible job information.
+        </p>
 
         <div className="table-wrapper">
           <table className="jobs-table">
@@ -75,7 +110,7 @@ function App() {
               </tr>
             </thead>
             <tbody>
-              {jobs.map((job) => (
+              {filteredJobs.map((job) => (
                 <tr key={job.id}>
                   <td data-label="Job ID">{job.id}</td>
                   <td data-label="Position">
@@ -94,6 +129,12 @@ function App() {
             </tbody>
           </table>
         </div>
+
+        {filteredJobs.length === 0 && (
+          <div className="empty-state" role="status">
+            No jobs found for "{searchTerm}". Try another keyword.
+          </div>
+        )}
       </section>
     </main>
   )

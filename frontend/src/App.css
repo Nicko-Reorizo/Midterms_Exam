@@ -48,7 +48,7 @@
 }
 
 .section-heading {
-  align-items: center;
+  align-items: flex-end;
   border-bottom: 1px solid #dde4f0;
   display: flex;
   justify-content: space-between;
@@ -65,7 +65,50 @@
 .section-heading p {
   color: #64748b;
   margin: 0;
-  text-align: right;
+}
+
+.search-field {
+  color: #475569;
+  display: grid;
+  flex: 0 1 360px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  gap: 8px;
+}
+
+.search-field input {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  color: #0f172a;
+  min-height: 44px;
+  outline: none;
+  padding: 10px 12px;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  width: 100%;
+}
+
+.search-field input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+}
+
+.search-field input::placeholder {
+  color: #94a3b8;
+}
+
+.sr-only {
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
 }
 
 .table-wrapper {
@@ -122,6 +165,14 @@
   padding: 6px 10px;
 }
 
+.empty-state {
+  border-top: 1px solid #e5eaf2;
+  color: #64748b;
+  font-weight: 700;
+  padding: 28px 24px;
+  text-align: center;
+}
+
 @media (max-width: 760px) {
   .app-shell {
     width: min(100% - 24px, 1180px);
@@ -136,6 +187,10 @@
 
   .section-heading p {
     text-align: left;
+  }
+
+  .search-field {
+    width: 100%;
   }
 
   .table-wrapper {
