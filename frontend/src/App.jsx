@@ -1,121 +1,142 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
+import { useMemo, useState } from 'react'
 import './App.css'
 
+const jobs = [
+  {
+    id: 'JOB-001',
+    title: 'Frontend Developer',
+    company: 'BrightPath Solutions',
+    location: 'Makati City',
+    type: 'Full-time',
+    salary: 'PHP 35,000 - 45,000',
+    deadline: 'Oct 18, 2026',
+    status: 'Open',
+  },
+  {
+    id: 'JOB-002',
+    title: 'Backend Developer',
+    company: 'Northstar Digital',
+    location: 'Quezon City',
+    type: 'Full-time',
+    salary: 'PHP 40,000 - 55,000',
+    deadline: 'Oct 21, 2026',
+    status: 'Open',
+  },
+  {
+    id: 'JOB-003',
+    title: 'UI/UX Designer',
+    company: 'PixelForge Studio',
+    location: 'Remote',
+    type: 'Contract',
+    salary: 'PHP 28,000 - 38,000',
+    deadline: 'Oct 25, 2026',
+    status: 'Open',
+  },
+  {
+    id: 'JOB-004',
+    title: 'QA Tester',
+    company: 'ClearWorks IT',
+    location: 'Cebu City',
+    type: 'Part-time',
+    salary: 'PHP 18,000 - 24,000',
+    deadline: 'Oct 30, 2026',
+    status: 'Open',
+  },
+]
+
 function App() {
-  const [count, setCount] = useState(0)
+  const [searchTerm, setSearchTerm] = useState('')
+
+  const filteredJobs = useMemo(() => {
+    const keyword = searchTerm.trim().toLowerCase()
+
+    if (!keyword) {
+      return jobs
+    }
+
+    return jobs.filter((job) =>
+      Object.values(job).some((value) =>
+        value.toLowerCase().includes(keyword),
+      ),
+    )
+  }, [searchTerm])
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
+    <main className="app-shell">
+      <header className="page-header">
         <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
+          <p className="eyebrow">Job Application System</p>
+          <h1>Available Jobs</h1>
         </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
+        <p className="job-count">
+          {filteredJobs.length} of {jobs.length} jobs shown
+        </p>
+      </header>
+
+      <section className="table-section" aria-labelledby="jobs-table-title">
+        <div className="section-heading">
+          <div>
+            <h2 id="jobs-table-title">Job Listing Table</h2>
+            <p>Browse current openings and review basic job information.</p>
+          </div>
+
+          <label className="search-field">
+            <span>Search jobs</span>
+            <input
+              type="search"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder="Search title, company, location..."
+              aria-describedby="search-help"
+            />
+          </label>
+        </div>
+        <p id="search-help" className="sr-only">
+          Search filters the job listing table by any visible job information.
+        </p>
+
+        <div className="table-wrapper">
+          <table className="jobs-table">
+            <thead>
+              <tr>
+                <th scope="col">Job ID</th>
+                <th scope="col">Position</th>
+                <th scope="col">Company</th>
+                <th scope="col">Location</th>
+                <th scope="col">Type</th>
+                <th scope="col">Salary Range</th>
+                <th scope="col">Deadline</th>
+                <th scope="col">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredJobs.map((job) => (
+                <tr key={job.id}>
+                  <td data-label="Job ID">{job.id}</td>
+                  <td data-label="Position">
+                    <strong>{job.title}</strong>
+                  </td>
+                  <td data-label="Company">{job.company}</td>
+                  <td data-label="Location">{job.location}</td>
+                  <td data-label="Type">{job.type}</td>
+                  <td data-label="Salary Range">{job.salary}</td>
+                  <td data-label="Deadline">{job.deadline}</td>
+                  <td data-label="Status">
+                    <span className="status-pill">{job.status}</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {filteredJobs.length === 0 && (
+          <div className="empty-state" role="status">
+            No jobs found for "{searchTerm}". Try another keyword.
+          </div>
+        )}
       </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+    </main>
   )
 }
 
