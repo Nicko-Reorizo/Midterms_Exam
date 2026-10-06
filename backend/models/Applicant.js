@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
+// Task 1
 const applicantSchema = new mongoose.Schema({
     name: { 
         type: String, 
@@ -23,9 +24,9 @@ const applicantSchema = new mongoose.Schema({
         type: String, 
         default: 'applicant' 
     }
-}, { timestamps: true }); // Automatically generates createdAt and updatedAt[cite: 4]
+}, { timestamps: true });
 
-// Hash password before saving to the database
+// Task 4
 applicantSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
     try {
