@@ -8,5 +8,6 @@ const { validateApplication } = require('../validator/applicationValidator');
 router.post('/', validateApplication, applicationController.applyForJob);
 // [APPLY-BE-03] GET /api/applications/my-applications - Get all my applications
 router.get('/my-applications', applicationController.getMyApplications);
-
+// [APPLY-BE-04] PUT /api/applications/:applicationId/status - Update application status
+router.put('/:applicationId/status', validateStatusUpdate, applicationController.updateStatus);
 module.exports = router;

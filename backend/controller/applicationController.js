@@ -63,7 +63,39 @@ const getMyApplications = async (req, res) => {
   }
 };
 
+// [APPLY-BE-04] Update Application Status
+const updateStatus = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try {
+    const { applicationId } = req.params;
+    const { status } = req.body;
+
+    const updatedApplication = await applicationService.updateApplicationStatus(
+      applicationId, 
+      status
+    );
+
+    if (!updatedApplication) {
+      return res.status(404).json({ message: 'Application not found' });
+    }
+
+    res.status(200).json({ 
+      message: 'Application status updated successfully', 
+      application: updatedApplication 
+    });
+
+  } catch (error) {
+    console.error('Update Status Error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
 module.exports = {
   applyForJob,
-  getMyApplications
+  getMyApplications,
+  updateStatus
 };
