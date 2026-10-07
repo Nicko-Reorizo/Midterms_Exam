@@ -3,17 +3,17 @@ const mongoose = require('mongoose');
 const ApplicationSchema = new mongoose.Schema({
   applicantId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Applicant', // Must match the exact name of Dev 3's Applicant model
+    ref: 'Applicant',
     required: true
   },
   jobId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Job', // Must match the exact name of Dev 4's Job model
+    ref: 'Job',
     required: true
   },
   resumeLink: {
     type: String,
-    required: true // Will be a URL from Cloudinary/AWS
+    required: true
   },
   coverLetter: {
     type: String,
